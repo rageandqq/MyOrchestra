@@ -6,3 +6,4 @@
            console.log('Hello Myo!');
                myMyo.vibrate();
  });
+console.log("begin");
