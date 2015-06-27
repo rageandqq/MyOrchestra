@@ -7,7 +7,8 @@ define(function() {
     },
 
     Actions: {
-      SET_INSTRUMENT: 'setInstrument'
+      SET_INSTRUMENT: 'setInstrument',
+      START_PLAYING: 'startPlaying'
     },
 
     States: {

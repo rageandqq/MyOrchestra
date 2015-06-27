@@ -45,7 +45,10 @@ define(function(require) {
         appState = States.AWAITING_POSITION;
         AppStore.emitChange();
         break;
-
+      case Actions.START_PLAYING:
+        appState = States.PLAYING;
+        AppStore.emitChange();
+        break;  
     }
   });
 
