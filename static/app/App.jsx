@@ -12,7 +12,7 @@ define(function(require) {
 
   var App = React.createClass({
     componentDidMount: function() {
-      document.title = 'TeleBeat';
+      document.title = 'MyOrchestra';
       AppStore.addChangeListener(this.updateState);
     },
 

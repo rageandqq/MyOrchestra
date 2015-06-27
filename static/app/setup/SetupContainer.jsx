@@ -13,7 +13,7 @@ define(function(require) {
 
           <div className="setup-centering">
 
-            <p className="setup-title setup-text">TeleBeat</p>
+            <p className="setup-title setup-text">MyOrchestra</p>
             <p className="setup-tagline setup-text">Rock to the beat of your own drums</p>
 
             <div className="setup-buttons">
