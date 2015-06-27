@@ -13,7 +13,7 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
   var self = this;
 
   //instance variables
-  this.debug = debug || true;
+  this.debug = debug;
   this.delta = this.zVal = this.rotationValue = this.heightValue = 0;
   this.rotationState = this.heightState = 'none';
 
@@ -36,10 +36,12 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
     if (edge) { //edge is true on start of pose
       this.locked = !this.locked;
       if (this.locked) {
-        console.log('locking Myo\n');
+        if (this.debug)
+          console.log('locking Myo\n');
       } else {
         myo.zeroOrientation(); //current orientation is now considered (0,0,0)
-        console.log('unlocking Myo\n');
+        if (this.debug)
+          console.log('unlocking Myo\n');
       }
       myo.vibrate();
     }
@@ -81,11 +83,13 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
     var state = analyzeTrend(self.rotationSamples.getArray(), ROTATION_THRESHOLD);
     if (state == 'none' && state != self.rotationState) {
       if (self.rotationState == 'increasing') {
-        console.log('increase tempo')
+        if (this.debug)
+          console.log('increase tempo')
         ServerHelper.increaseTempo(self.currentDevice.socket);
       }
       else {
-        console.log('decrease tempo')
+        if (this.debug)
+          console.log('decrease tempo')
         ServerHelper.decreaseTempo(self.currentDevice.socket);
       }
 
@@ -103,11 +107,13 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
     var state = analyzeTrend(self.heightSamples.getArray(), HEIGHT_THRESHOLD);
     if (state == 'none' && state != self.heightState) {
       if (self.heightState == 'increasing') {
-        console.log('increase volume')
+        if (this.debug)
+          console.log('increase volume')
         ServerHelper.increaseVolume(self.currentDevice.socket);
       }
       else {
-        console.log('decrease volume')
+        if (this.debug)
+          console.log('decrease volume')
         ServerHelper.decreaseVolume(self.currentDevice.socket);
       }
 
@@ -179,8 +185,6 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
 
 //set list of devices
 MyoReader.prototype.setDevices = function(devices) {
-  console.log('new set of devices read by myo: ');
-  console.log(devices);
   this.devices = devices;
 }
 
