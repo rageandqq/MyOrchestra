@@ -6,7 +6,8 @@ define(function(require) {
   var socket = io('http://localhost:3000');
 
   var Events = {
-    AWAITING_POSITION: 'awaiting-position'
+    AWAITING_POSITION: 'awaiting-position',
+    POSITION_RECIEVED: 'position-received'
   };
 
   socket.on('connect', function() {
@@ -15,6 +16,11 @@ define(function(require) {
 
   socket.on('disconnect', function() {
     console.debug('Disconnecting.');
+  });
+
+  socket.on(Events.POSITION_RECIEVED, function(){
+    AppSocketActions.startPlaying();
+    console.debug('Started playing.');
   });
 
   var Connection = {

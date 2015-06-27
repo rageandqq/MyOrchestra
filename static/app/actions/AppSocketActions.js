@@ -3,6 +3,11 @@ define(function(require) {
   var Actions = require('app/constants/AppConstants').Actions;
 
   var AppSocketActions = {
+  	startPlaying: function(){
+  		AppDispatcher.handleSocketAction({
+  		  actionType: Actions.START_PLAYING
+  		});
+  	}
   };
 
   return AppSocketActions;
