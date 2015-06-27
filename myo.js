@@ -1,12 +1,15 @@
-var timer = 0;
+//Globals
+var delta = 0;
 var locked = true;
+//Constants
+var FREQUENCY = 30;
+
 var M = require('myo');
 
 var myo = Myo.create();
 
 myo.on('connected', function() {
   myo.setLockingPolicy('none');
-  locked = false;
 });
 
 myo.on('fist', function(edge){
@@ -15,32 +18,31 @@ myo.on('fist', function(edge){
     if (locked) {
       console.log("locking Myo\n");
     } else {
+      myo.zeroOrientation(); //current orientation is now considered "home"
       console.log("unlocking Myo\n");
     }
+    myo.vibrate();
   }
 });
 
 myo.on('imu', function(data) {
-  timer++;
-  if (timer >= 60){
-    timer %= 60;
+  delta++;
+  if (delta >= FREQUENCY){
+    delta %= FREQUENCY;
     if (!locked) {
+      console.log("Accelerometer");
+      printXYZ(data.accelerometer);
       console.log("Gyroscope");
-      printGyroscope(data.gyroscope);
+      printXYZ(data.gyroscope);
       console.log("Orientation");
-      printOrientation(data.orientation);
+      printXYZ(data.orientation);
       console.log("\n");
     }
   }
 });
 
-function printGyroscope(g) {
-  console.log("x: " + g.x);
-  console.log("y: " + g.y);
-  console.log("z: " + g.z);
-}
-
-function printOrientation(o) {
-  printGyroscope(o);
-  console.log("W: " + o.W);
+function printXYZ(d) {
+  console.log("x: " + d.x);
+  console.log("y: " + d.y);
+  console.log("z: " + d.z);
 }
