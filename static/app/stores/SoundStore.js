@@ -62,8 +62,7 @@ function clearBeat(){ // clear the beat
   beat = new buzz.group(); // reset beat to be empty
 }
 
-// Add a certain sound to a beat
-function addToBeat(sound){
+function playSound(sound){ // Changes sound played
   if(beatSounds.indexOf(sound) < 0){
     beat.pause(); // stop beat to prevent issues
     beatSounds.splice(0, beatSounds.length); // emptying the array
@@ -71,20 +70,27 @@ function addToBeat(sound){
     beat = new buzz.group(beatSounds);
     beat.loop().play(); // re-play
   }
-  console.log(beatSounds.length); // to help make sure length is accurate
 }
 
-// remove a certian sound from a beat
+// Add a certain sound to a beat
+function addToBeat(sound){
+  if(beatSounds.indexOf(sound) < 0){
+    beat.pause(); // stop beat to prevent issues
+    beatSounds.push(sound);
+    beat = new buzz.group(beatSounds);
+    beat.loop().play(); // re-play
+  }
+}
+
+// remove a certain sound from a beat
 function removeFromBeat(sound){
   var index = beatSounds.indexOf(sound);
   if (index > -1){
     beat.pause(); // stop beat to prevent issues
     beatSounds.splice(index, 1);
-    console.log("beat should be spliced");
     beat = new buzz.group(beatSounds);
     beat.loop().play(); // re-play
   }
-  console.log(beatSounds.length); // to help make sure length is accurate
 }
 
 // Given a sound, it will toggle it playing from the beat
@@ -111,38 +117,12 @@ function playBeat(){ // Play Beat
   }
 }
 
-function doubleBeatSpeed(){ // double beat speed
-  if(beat){
-    beat.setSpeed(2);
-  }
+function increaseSpeed(sound){ // Double Sound Speed
+  sound.setSpeed(sound.getSpeed() * 2);
 }
 
-function normalBeatSpeed(){ // normalize beat speed
-  if(beat){
-    beat.setSpeed(1);
-  }
-}
-
-function halfBeatSpeed(){ // half the beat speed
-  if(beat){
-    beat.setSpeed(0.5);
-  }
-}
-
-function doubleSoundSpeed(sound){ // double a sound speed
-  sound.setSpeed(2);
-}
-
-function normalSoundSpeed(sound){ // normalize a sound speed
-  sound.setSpeed(1);
-}
-
-function halfSoundSpeed(sound){ // half a sound speed
-  sound.setSpeed(0.5);
-}
-
-function fadeBeat(time){ // Fade the beat out given a duration of a fade
-  beat.fadeOut(time);
+function decreaseSpeed(sound){ // Halve Speed
+  sound.setSpeed(sound.getSpeed() / 2);
 }
 
 function increaseSoundVolume(sound){ // increase a sound volume
@@ -153,12 +133,8 @@ function decreaseSoundVolume(sound){ // decrease a sound volume
   sound.decreaseVolume(10);
 }
 
-function increaseVolume(){ // increase beat volume
-  beat.increaseVolume(10);
-}
-
-function decreaseVolume(){ // decrease beat volume
-  beat.decreaseVolume(10);
+function fadeBeat(time){ // Fade the beat out given a duration of a fade
+  beat.fadeOut(time);
 }
 
 
