@@ -1,5 +1,5 @@
 {
-  "name": "tele-beat",
+  "name": "MyOrchestra",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -7,14 +7,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rageandqq/TeleBeat.git"
+    "url": "https://github.com/rageandqq/MyOrchestra.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/rageandqq/TeleBeat/issues"
+    "url": "https://github.com/rageandqq/MyOrchestra/issues"
   },
-  "homepage": "https://github.com/rageandqq/TeleBeat",
+  "homepage": "https://github.com/rageandqq/MyOrchestra",
   "dependencies": {
     "body-parser": "~1.0.0",
     "cookie-parser": "~1.0.1",
