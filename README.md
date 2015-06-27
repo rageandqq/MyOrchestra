@@ -1,5 +1,7 @@
 #MyOrchestra
 
+**1st Place Hackathon Winner at EngHack 2015, University of Waterloo!**
+
 Ever wanted to conduct your own orchestra? Now you can!  
 All you need is a Myo.
 
