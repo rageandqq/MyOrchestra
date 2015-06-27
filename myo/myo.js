@@ -58,7 +58,7 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
     this.delta++;
     if (this.delta >= SAMPLE_PERIOD){
       if (this.devices.length > 0)
-        analyze(this.devices);
+        analyzeCurrentDevice(this.devices);
       this.delta %= SAMPLE_PERIOD;
       this.zVal = data.orientation.z; //set most recent zValue
 
@@ -166,11 +166,13 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
   }
 
   //analyze orientation for devices and update current device
-  function analyze(deviceList) {
+  function analyzeCurrentDevice(deviceList) {
     for (var i in deviceList) {
       var d = deviceList[i];
       if (d.z >= self.zVal - Z_THRESHOLD && d.z <= self.zVal + Z_THRESHOLD) {
         self.currentDevice = d;
+      } else {
+        self.currentDevice = null;
       }
     }
   }
