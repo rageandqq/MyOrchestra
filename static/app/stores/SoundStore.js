@@ -16,8 +16,8 @@ define(function(require) {
 
   // Sound Files
   var soundFiles = ["sounds/Crash1.wav", "sounds/Hat4.wav", "sounds/Kick1.wav", "sounds/Kick2.wav",
-"sounds/Snare1.wav", "sounds/Guitar1.mp3", "sounds/Violin1.mp3",
-"sounds/Bass1.mp3", "sounds/Bass2.mp3", "sounds/Synth1.mp3"];
+"sounds/Snare1.wav", "sounds/Guitar1.wav", "sounds/Violin1.wav",
+"sounds/Bass1.wav", "sounds/Bass2.wav", "sounds/Synth1.wav"];
 
   soundFiles = _(soundFiles).map(function(file) {
     return "/assets/" + file;
