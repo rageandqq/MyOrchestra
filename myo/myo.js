@@ -5,12 +5,12 @@ var BoundedArray = require('../utils/bounded-array');
 var MyoIO = module.exports = function(ServerHelper, debug) {
   //Constants
   var SAMPLE_PERIOD = 20;
-  var Z_THRESHOLD = 0.05;
-  var HEIGHT_THRESHOLD = 0.1;
-  var ROTATION_THRESHOLD = 0.3;
+  var Z_THRESHOLD = 0.07;
+  var HEIGHT_THRESHOLD = 0.15;
+  var ROTATION_THRESHOLD = 0.1;
   var HEIGHT_SAMPLE_SIZE = 4;
   var ROTATION_SAMPLE_SIZE = 4;
-  var TEMPORARY_LOCK_TIMER = 1000;
+  var TEMPORARY_LOCK_TIMER = 1200;
   var self = this;
 
   //instance variables
@@ -43,6 +43,8 @@ var MyoIO = module.exports = function(ServerHelper, debug) {
         myo.zeroOrientation(); //current orientation is now considered (0,0,0)
         if (this.debug)
           console.log('unlocking Myo\n');
+        this.heightSamples.clear();
+        this.rotationSamples.clear();
       }
       myo.vibrate();
     }
@@ -65,8 +67,8 @@ var MyoIO = module.exports = function(ServerHelper, debug) {
 
       if (!this.locked) {
         //sample when not locked
-        this.heightSamples.push(data.accelerometer.x);
-        this.rotationSamples.push(data.accelerometer.y);
+        this.heightSamples.push({device: self.currentDevice, val: data.accelerometer.x});
+        this.rotationSamples.push({device: self.currentDevice, val: data.accelerometer.y});
 
         if (this.debug) { //debug
           printDevices(this.devices);
@@ -74,11 +76,8 @@ var MyoIO = module.exports = function(ServerHelper, debug) {
           console.log('current z: ' + this.zVal);
         }
 
-        if (this.currentDevice != null) {
-          //TODO: Fix overly sensitive rotation and height
-          handleRotation(data.accelerometer.y);
-          handleHeight(data.accelerometer.x);
-        }
+        analyzeRotation(data.accelerometer.y, this.currentDevice);
+        analyzeHeight(data.accelerometer.x, this.currentDevice);
       }
 
       if (this.currentDevice != null) {
@@ -103,51 +102,61 @@ var MyoIO = module.exports = function(ServerHelper, debug) {
     }
   }.bind(this));
 
-  function handleRotation(val) {
-    var state = analyzeTrend(self.rotationSamples.getArray(), ROTATION_THRESHOLD);
-    if (state == 'none' && state != self.rotationState) {
+  function analyzeRotation(val, device) {
+    var state = analyzeTrend(self.rotationSamples.getArray().map(function(r){
+      return r.val;
+    }), ROTATION_THRESHOLD);
+    var sampleDev = self.rotationSamples.getArray()[0].device;
+    if (state == 'none' && state != self.rotationState && sampleDev != null) {
       if (self.rotationState == 'increasing') {
         if (self.debug)
           console.log('increase tempo')
-        ServerHelper.increaseTempo(self.currentDevice.socket);
+        ServerHelper.increaseTempo(sampleDev.socket);
 
-        self.locked = true; //lock temporarily
-        setTimeout(function() {
-          self.locked = false;
-        }, TEMPORARY_LOCK_TIMER);
-
-        self.rotationSamples.clear();
       }
       else {
         if (self.debug)
           console.log('decrease tempo')
-        ServerHelper.decreaseTempo(self.currentDevice.socket);
+        ServerHelper.decreaseTempo(sampleDev.socket);
       }
+
+      self.locked = true; //lock temporarily
+      self.rotationSamples.clear();
+
+      setTimeout(function() {
+        self.locked = false;
+      }, TEMPORARY_LOCK_TIMER);
+
 
     }
     self.rotationState = state;
   }
 
-  function handleHeight(val) {
-    var state = analyzeTrend(self.heightSamples.getArray(), HEIGHT_THRESHOLD);
-    if (state == 'none' && state != self.heightState) {
+  function analyzeHeight(val, device) {
+    var state = analyzeTrend(self.heightSamples.getArray().map(function(h) {
+      return h.val;
+    }), HEIGHT_THRESHOLD);
+    var sampleDev = self.heightSamples.getArray()[0].device;
+    if (state == 'none' && state != self.heightState && sampleDev != null) {
       if (self.heightState == 'increasing') {
         if (self.debug)
           console.log('increase volume')
-        ServerHelper.increaseVolume(self.currentDevice.socket);
-
-        self.locked = true; //lock temporarily
-        setTimeout(function() {
-          self.locked = false;
-        }, TEMPORARY_LOCK_TIMER);
+        ServerHelper.increaseVolume(sampleDev.socket);
 
       }
       else {
         if (self.debug)
           console.log('decrease volume')
-        ServerHelper.decreaseVolume(self.currentDevice.socket);
+        ServerHelper.decreaseVolume(sampleDev.socket);
       }
+
+      self.locked = true; //lock temporarily
       self.heightSamples.clear();
+
+      setTimeout(function() {
+        self.locked = false;
+      }, TEMPORARY_LOCK_TIMER);
+
     }
     self.heightState = state;
   }
