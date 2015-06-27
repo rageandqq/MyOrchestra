@@ -15,9 +15,8 @@ define(function(require) {
   var currentInstrument = -1;
 
   // Sound Files
-  var soundFiles = ["sounds/Crash1.wav", "sounds/Crash2.wav", "sounds/Hat1.wav",
-"sounds/Hat2.wav", "sounds/Hat3.wav", "sounds/Hat4.wav","sounds/Kick1.wav", "sounds/Kick2.wav",
-"sounds/Snare1.wav", "sounds/Snare2.wav", "sounds/Guitar1.mp3", "sounds/Violin1.mp3",
+  var soundFiles = ["sounds/Crash1.wav", "sounds/Hat4.wav", "sounds/Kick1.wav", "sounds/Kick2.wav",
+"sounds/Snare1.wav", "sounds/Guitar1.mp3", "sounds/Violin1.mp3",
 "sounds/Bass1.mp3", "sounds/Bass2.mp3", "sounds/Synth1.mp3"];
 
   soundFiles = _(soundFiles).map(function(file) {
@@ -34,12 +33,7 @@ var Sound1 = new buzz.sound(soundFiles[0]),
   Sound7 = new buzz.sound(soundFiles[6]),
   Sound8 = new buzz.sound(soundFiles[7]),
   Sound9 = new buzz.sound(soundFiles[8]),
-  Sound10 = new buzz.sound(soundFiles[9]),
-  Sound11 = new buzz.sound(soundFiles[10]),
-  Sound12 = new buzz.sound(soundFiles[11]),
-  Sound13 = new buzz.sound(soundFiles[12]),
-  Sound14 = new buzz.sound(soundFiles[13]),
-  Sound15 = new buzz.sound(soundFiles[14]);
+  Sound10 = new buzz.sound(soundFiles[9]);
 
 
 // buzz.sounds is the array e.g buzz.sounds[0] is Sound1
