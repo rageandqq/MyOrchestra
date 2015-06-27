@@ -80,7 +80,7 @@ var MyoIO = module.exports = function(ServerHelper, debug) {
         analyzeHeight(data.accelerometer.x, this.currentDevice);
       }
 
-      if (this.currentDevice != null) {
+      if (this.currentDevice != null && !this.locked) {
         ServerHelper.heartbeat(this.currentDevice.socket); //emit heartbeat
       }
     }
