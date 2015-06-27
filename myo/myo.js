@@ -53,13 +53,6 @@ myo.on('imu', function(data) {
     delta %= FREQUENCY;
     zVal = data.orientation.z; //set most recent zValue
     if (!locked) {
-      //      console.log('Accelerometer');
-      //      printXYZ(data.accelerometer);
-      //      console.log('Gyroscope');
-      //      printXYZ(data.gyroscope);
-      //      console.log('Orientation');
-      //      printXYZ(data.orientation);
-      //      console.log('\n');
       analyze(); //determine where myo is pointing to
       printDevices(deviceSet);
       console.log('current device: ' + currentDeviceName);

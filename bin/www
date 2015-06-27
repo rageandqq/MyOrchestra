@@ -8,20 +8,20 @@ var socketlist = [];
 app.set('port', process.env.PORT || 3000);
 
 var server = app.listen(app.get('port'), function() {
-  debug('Express server listening on port ' + server.address().port);
+    debug('Express server listening on port ' + server.address().port);
 });
 
 var io = require('socket.io')(server);
 
 io.on('connection',function(socket){
-	socketlist.push(socket);
-})
+    socketlist.push(socket);
+});
 
 io.on('disconnect', function(socket){
-	var i;
-	for (i = 0; i < socketlist.length; i++){
-		if (socket.id === socketlist[i].id)
-			break;
-	}
-	socketlist = socketlist.splice(i,1);
-})
+    var i;
+    for (i = 0; i < socketlist.length; i++){
+      if (socket.id === socketlist[i].id)
+        break;
+    }
+    socketlist = socketlist.splice(i,1);
+});
