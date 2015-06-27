@@ -7,12 +7,17 @@ var MyoReader = module.exports = function(ServerInit) {
   var locked = true;
   var zVal = 0;
 
-  this.awaitingPosition = false;
-  this.server = ServerInit.server;
-
   //Constants
   var FREQUENCY = 30;
   var THRESHOLD = 0.1;
+
+  //instance variables
+  this.awaitingPosition = false;
+  this.server = ServerInit.server;
+  this.rotationValue = 0;
+  this.heightValue = 0;
+  this.rotationRest = true;
+  this.heightRest = true;
 
   //Create myo connection
   var myo = Myo.create();
@@ -21,7 +26,7 @@ var MyoReader = module.exports = function(ServerInit) {
     myo.setLockingPolicy('none');
   });
 
-  myo.on('fist', function(edge){
+  myo.on('double_tap', function(edge){
     if (edge) { //edge is true on start of pose
       locked = !locked;
       if (locked) {
@@ -47,21 +52,26 @@ var MyoReader = module.exports = function(ServerInit) {
       delta %= FREQUENCY;
       zVal = data.orientation.z; //set most recent zValue
       if (!locked) {
-        //noop, report any values here
-        console.log('Orientation');
-        printXYZ(data.orientation);
-        console.log('Accelerometer');
-        printXYZ(data.accelerometer);
-        console.log('Gyroscope');
-        printXYZ(data.gyroscope);
-        console.log('AwaitingPosition:' + this.awaitingPosition);
-        if (this.server != null)
-          console.log('Server:' + this.server.toString());
-        console.log('\n');
+        //        console.log('Orientation');
+        //        printXYZ(data.orientation);
+        //        console.log('Accelerometer');
+        //        printXYZ(data.accelerometer);
+        //        console.log('Gyroscope');
+        //        printXYZ(data.gyroscope);
+        //        console.log('\n');
+        handleHeight(data.accelerometer.x);
+        handleRotation(data.accelerometer.y);
       }
     }
   }.bind(this));
 
+  function handleHeight(val) {
+
+  }
+
+  function handleRotation(val) {
+    console.log('Rotation: ' + val);
+  }
 
   //print device list (unused)
   function printDevices (devices) {
