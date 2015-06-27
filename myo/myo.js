@@ -2,7 +2,7 @@
 var Myo = require('myo');
 var BoundedArray = require('../utils/bounded-array');
 
-var MyoReader = module.exports = function(ServerHelper, debug) {
+var MyoIO = module.exports = function(ServerHelper, debug) {
   //Constants
   var SAMPLE_PERIOD = 20;
   var Z_THRESHOLD = 0.1;
@@ -186,11 +186,11 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
 }
 
 //set list of devices
-MyoReader.prototype.setDevices = function(devices) {
+MyoIO.prototype.setDevices = function(devices) {
   this.devices = devices;
 }
 
 //change to awaiting position state
-MyoReader.prototype.awaitPosition = function() {
+MyoIO.prototype.awaitPosition = function() {
   this.awaitingPosition = true;
 };
