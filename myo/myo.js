@@ -1,10 +1,13 @@
 //Dependencies
 var Myo = require('myo');
+var BoundedArray = require('../utils/bounded-array');
 
 var MyoReader = module.exports = function(ServerHelper, debug) {
   //Constants
-  var FREQUENCY = 30;
-  var THRESHOLD = 0.1;
+  var SAMPLE_PERIOD = 20;
+  var Z_THRESHOLD = 0.1;
+  var HEIGHT_THRESHOLD = 0.1;
+  var HEIGHT_SAMPLE_SIZE = 4;
   var self = this;
 
   //instance variables
@@ -18,6 +21,10 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
   this.heightRest = true;
   this.devices = [];
   this.debug = debug || true;
+  this.heightSamples = new BoundedArray(HEIGHT_SAMPLE_SIZE);
+  this.heightState = 'none';
+  this.currentDevice = null;
+  this.currentDeviceName = 'none';
 
   //Create myo connection
   var myo = Myo.create();
@@ -41,6 +48,7 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
 
   myo.on('fingers_spread', function(edge) {
     if (edge && !this.locked && this.awaitingPosition) {
+      console.log('added device at pos: ' + this.zVal);
       this.awaitingPosition = false;
       ServerHelper.addDevice(this.zVal);
     }
@@ -48,35 +56,69 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
 
   myo.on('imu', function(data) {
     this.delta++;
-    if (this.delta >= FREQUENCY){
-      this.delta %= FREQUENCY;
+    if (this.delta >= SAMPLE_PERIOD){
+      this.delta %= SAMPLE_PERIOD;
       this.zVal = data.orientation.z; //set most recent zValue
       if (!this.locked) {
         if (this.devices.length > 0) {
           analyze(this.devices);
         }
         if (this.debug) {
-          printDevices(this.devices); //print device list 
+          printDevices(this.devices); //print device list
         }
-        //handleHeight(data.accelerometer.x);
-        //handleRotation(data.accelerometer.y);
+        //handleRotation(data.accelerometer.y); //TODO: IMPLEMENT
+        handleHeight(data.accelerometer.x);
+        console.log('current device: ' + this.currentDeviceName);
       }
     }
   }.bind(this));
 
-  var currentVolume = 0;
-  var motionVolumefactor = 5;
-  var xThreshold = 0.2;
-  //0 horizontal 1 vertical 
-  function handleHeight(val, val_prev) {
-    if (Math.abs(val - val_prev) < xThreshold && (val - val_prev) > 0) { 
-      currentVolume+=motionVolumefactor; 
-      console.log('current volume: ' + currentVolume);
-    };
-    if (Math.abs(val-val_prev) < xThreshold && (val-val_prev) < 0){
-      currentVolume-=motionVolumefactor;
-      console.log('currentVolume: '+ currentVolume);
+  function handleHeight(val) {
+    self.heightSamples.push(val);
+    var state = analyzeTrend(self.heightSamples.getArray());
+    if (state == 'none' && state != self.heightState) {
+      if (self.heightState == 'increasing') {
+        //TODO: Use Callback from Server
+        console.log('increase volume')
+      }
+      else {
+        //TODO: Use Callback from Server
+        console.log('decrease volume')
+      }
+      self.locked = true;
+      setTimeout(function() {
+        self.locked = false;
+      }, 2000);
+
+      self.heightSamples.clear();
     }
+    self.heightState = state;
+  }
+
+  function analyzeTrend(arr) {
+    if (isIncreasing(arr))
+      return 'increasing';
+    if (isDecreasing(arr))
+      return 'decreasing';
+    return 'none';
+  }
+
+  function isIncreasing(arr) {
+    var dist = 0;
+    for (var i = 1; i < arr.length; i++) {
+      dist += (arr[i] - arr[i-1]);
+    }
+    dist/= arr.length;
+    return dist - HEIGHT_THRESHOLD > 0;
+  }
+
+  function isDecreasing(arr) {
+    var dist = 0;
+    for (var i = 1; i < arr.length; i++) {
+      dist += (arr[i] - arr[i-1]);
+    }
+    dist /= arr.length;
+    return dist + HEIGHT_THRESHOLD < 0;
   }
 
   function handleRotation(val) {
@@ -102,8 +144,9 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
   function analyze(devices) {
     for (var i in devices) {
       var d = devices[i];
-      if (d.z >= this.zVal - THRESHOLD && d.z <= this.zVal + THRESHOLD) {
+      if (d.z >= this.zVal - Z_THRESHOLD && d.z <= this.zVal + Z_THRESHOLD) {
         this.currentDeviceName = d.id; //update current device pointed to
+        this.currentDevice = d;
       }
     }
   }

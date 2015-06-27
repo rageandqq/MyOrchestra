@@ -47,6 +47,7 @@ var addDevice = function(z) {
 
 var ServerCallbacks = { //TODO: Implement all callbacks to be used by MyoReader
   addDevice: addDevice,
+  heartbeat: null,
   increaseVolume: null,
   decreaseVolume: null,
   increaseTempo: null,
