@@ -60,10 +60,16 @@ var increaseTempo = function(socket) {
 var decreaseTempo = function(socket) {
   socket.emit('decrease-tempo');
 }
-var ServerCallbacks = { //TODO: Implement all callbacks to be used by MyoReader
+
+var heartbeat = function(socket) {
+  socket.emit('current-device');
+}
+
+var ServerCallbacks = {
   addDevice: addDevice,
   increaseVolume: increaseVolume,
   decreaseVolume: decreaseVolume,
   increaseTempo: increaseTempo,
-  decreaseTempo: decreaseTempo
+  decreaseTempo: decreaseTempo,
+  heartbeat: heartbeat
 };
