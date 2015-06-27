@@ -1,9 +1,11 @@
- var Myo = require('myo');
+var M = require('myo');
 
- var myMyo = Myo.create();
- myMyo.on('fist', function(edge){
-       if(!edge) return;
-           console.log('Hello Myo!');
-               myMyo.vibrate();
- });
-console.log("begin");
+var myo = Myo.create();
+
+myo.on('connected', function() {
+  myo.setLockingPolicy('none');
+});
+
+myo.on('fist', function() {
+  myo.vibrate();
+});
