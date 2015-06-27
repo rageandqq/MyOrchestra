@@ -7,7 +7,7 @@ var MyoIO = module.exports = function(ServerHelper, debug) {
   var SAMPLE_PERIOD = 20;
   var Z_THRESHOLD = 0.07;
   var HEIGHT_THRESHOLD = 0.15;
-  var ROTATION_THRESHOLD = 0.1;
+  var ROTATION_THRESHOLD = 0.15;
   var HEIGHT_SAMPLE_SIZE = 4;
   var ROTATION_SAMPLE_SIZE = 4;
   var TEMPORARY_LOCK_TIMER = 1200;
@@ -50,7 +50,7 @@ var MyoIO = module.exports = function(ServerHelper, debug) {
     }
   }.bind(this));
 
-  myo.on('fingers_spread', function(edge) {
+  myo.on('fist', function(edge) {
     if (edge && !this.locked && this.awaitingPosition) {
       this.awaitingPosition = false;
       ServerHelper.addDevice(this.zVal);
