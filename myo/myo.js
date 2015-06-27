@@ -90,7 +90,15 @@ var MyoIO = module.exports = function(ServerHelper, debug) {
     if (edge) {
       if (this.debug)
         console.log('muting all');
-      ServerHelper.mute();
+      ServerHelper.emitAll('mute');
+    }
+  }.bind(this));
+
+  myo.on('wave_out', function(edge) {
+    if (edge) {
+      if (this.debug)
+        console.log('unmuting all');
+      ServerHelper.emitAll('unmute');
     }
   }.bind(this));
 

@@ -65,10 +65,10 @@ var heartbeat = function(socket) {
   socket.emit('current-device');
 }
 
-var mute = function() { //iterate through devices and send mute to all
+var emitAll = function(message) {
   for (var i in devices) {
     var d = devices[i];
-    d.socket.emit('mute');
+    d.socket.emit(message);
   }
 }
 
@@ -78,6 +78,6 @@ var ServerCallbacks = {
   decreaseVolume: decreaseVolume,
   increaseTempo: increaseTempo,
   decreaseTempo: decreaseTempo,
-  mute, mute
+  emitAll: emitAll,
   heartbeat: heartbeat //TODO: Implement heartbeat in MyoIO
 };
