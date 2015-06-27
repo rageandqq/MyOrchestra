@@ -11,17 +11,19 @@ define(function(require) {
 
   var CHANGE_EVENT = 'change';
 
+  var isCurrentDevice = false;
+  var currentInstrument = -1;
+
   // Sound Files
-  var soundFiles = ["sounds/Crash1.wav", "sounds/Crash2.wav", "sounds/Hat1.wav",
-"sounds/Hat2.wav", "sounds/Hat3.wav", "sounds/Hat4.wav","sounds/Kick1.wav", "sounds/Kick2.wav", 
-"sounds/Snare1.wav", "sounds/Snare2.wav", "sounds/Guitar1.mp3", "sounds/Violin1.mp3",
-"sounds/Bass1.mp3", "sounds/Bass2.mp3", "sounds/Synth1.mp3"];
+  var soundFiles = ["sounds/Crash1.wav", "sounds/Hat4.wav", "sounds/Kick1.wav", "sounds/Kick2.wav",
+"sounds/Snare1.wav", "sounds/Guitar1.wav", "sounds/Violin1.wav",
+"sounds/Bass1.wav", "sounds/Bass2.wav", "sounds/Synth1.wav"];
 
   soundFiles = _(soundFiles).map(function(file) {
-    return "assets/" + file;
+    return "/assets/" + file;
   });
 
-// Initializing all sounds
+// Initializing all sounds\
 var Sound1 = new buzz.sound(soundFiles[0]),
   Sound2 = new buzz.sound(soundFiles[1]),
   Sound3 = new buzz.sound(soundFiles[2]),
@@ -31,22 +33,8 @@ var Sound1 = new buzz.sound(soundFiles[0]),
   Sound7 = new buzz.sound(soundFiles[6]),
   Sound8 = new buzz.sound(soundFiles[7]),
   Sound9 = new buzz.sound(soundFiles[8]),
-  Sound10 = new buzz.sound(soundFiles[9]),
-  Sound11 = new buzz.sound(soundFiles[10]),
-  Sound12 = new buzz.sound(soundFiles[11]),
-  Sound13 = new buzz.sound(soundFiles[12]),
-  Sound14 = new buzz.sound(soundFiles[13]),
-  Sound15 = new buzz.sound(soundFiles[14]);
+  Sound10 = new buzz.sound(soundFiles[9]);
 
-// Values for sound indexes
-var crash = 0;
-var hat = 2;
-var kick = 6;
-var snare = 8;
-var guitar = 10;
-var violin = 11;
-var bass = 12;
-var synth = 14;
 
 // buzz.sounds is the array e.g buzz.sounds[0] is Sound1
 
@@ -117,30 +105,79 @@ function playBeat(){ // Play Beat
   }
 }
 
-function increaseSpeed(sound){ // Double Sound Speed
-  sound.setSpeed(sound.getSpeed() * 2);
+function increaseSoundSpeed(sound){ // Double Sound Speed
+  beat.pause();
+  if (sound.getSpeed() === 0.5){
+    sound.setSpeed(1);
+  } else if(sound.getSpeed() === 1){
+    sound.setSpeed(1.5);
+  } else if(sound.getSpeed() === 1.5){
+    sound.setSpeed(2);
+  } else if(sound.getSpeed() === 2){
+    sound.setSpeed(2.5);
+  } else if(sound.getSpeed() === 2.5){
+    sound.setSpeed(3);
+  } else if(sound.getSpeed() === 3){
+    sound.setSpeed(3.5);
+  } else if(sound.getSpeed() === 3.5){
+    sound.setSpeed(4);
+  } 
+  beat.loop().play();
 }
 
-function decreaseSpeed(sound){ // Halve Speed
-  sound.setSpeed(sound.getSpeed() / 2);
+function decreaseSoundSpeed(sound){ // Halve Speed
+  beat.pause();
+  if(sound.getSpeed() === 1){
+    sound.setSpeed(0.5);
+  } else if(sound.getSpeed() === 1.5){
+    sound.setSpeed(1);
+  } else if(sound.getSpeed() === 2){
+    sound.setSpeed(1.5);
+  } else if(sound.getSpeed() === 2.5){
+    sound.setSpeed(2);
+  } else if(sound.getSpeed() === 3){
+    sound.setSpeed(2.5);
+  } else if(sound.getSpeed() === 3.5){
+    sound.setSpeed(3);
+  } else if(sound.getSpeed() === 4){
+    sound.setSpeed(3.5);
+  }
+  beat.loop().play();
 }
 
 function increaseSoundVolume(sound){ // increase a sound volume
+  beat.pause();
   sound.increaseVolume(10);
+  beat.loop().play();
 }
 
 function decreaseSoundVolume(sound){ // decrease a sound volume
+  beat.pause();
   sound.decreaseVolume(10);
+  beat.loop().play();
 }
 
 function fadeBeat(time){ // Fade the beat out given a duration of a fade
   beat.fadeOut(time);
 }
 
+function resetCurrentDevice() {
+  isCurrentDevice = false;
+  SoundStore.emitChange();
+}
+
+var debouncedResetCurrentDevice = _(resetCurrentDevice).debounce(500);
 
   var SoundStore = _.extend({}, EventEmitter.prototype, {
+
     getState: function() {
-      return {};
+      return {
+        isCurrentDevice: isCurrentDevice,
+        volume: buzz.sounds[currentInstrument].getVolume(),
+        currentInstrument: currentInstrument,
+        speed: buzz.sounds[currentInstrument].getSpeed()
+
+      };
     },
 
     emitChange: function() {
@@ -161,6 +198,43 @@ function fadeBeat(time){ // Fade the beat out given a duration of a fade
     var action = payload.action;
 
     switch(action.actionType) {
+      case Actions.CURRENT_DEVICE:
+        if (!isCurrentDevice) {
+          isCurrentDevice = true;
+          SoundStore.emitChange();
+        }
+        debouncedResetCurrentDevice();
+        break;
+
+      case Actions.SET_INSTRUMENT:
+        currentInstrument = action.instrument;
+        SoundStore.emitChange();
+        break;
+
+      case Actions.START_PLAYING:
+        addToBeat(buzz.sounds[currentInstrument]);
+        SoundStore.emitChange();
+        break;
+
+      case Actions.INCREASE_TEMPO:
+        increaseSoundSpeed(buzz.sounds[currentInstrument]);
+        SoundStore.emitChange();
+        break;
+
+      case Actions.DECREASE_TEMPO:
+        decreaseSoundSpeed(buzz.sounds[currentInstrument]);
+        SoundStore.emitChange();
+        break;
+
+      case Actions.INCREASE_VOLUME:
+        increaseSoundVolume(buzz.sounds[currentInstrument]);
+        SoundStore.emitChange();
+        break;
+
+      case Actions.DECREASE_VOLUME:
+        decreaseSoundVolume(buzz.sounds[currentInstrument]);
+        SoundStore.emitChange();
+        break;
 
     }
   });

@@ -1,5 +1,6 @@
 define(function(require) {
   var React = require('react-with-addons');
+  var _ = require('underscore');
 
   var InstrumentButton = require('app/setup/InstrumentButton');
   var Instruments = require('app/constants/Instruments');
@@ -17,9 +18,15 @@ define(function(require) {
             <p className="setup-tagline setup-text">Rock to the beat of your own drums</p>
 
             <div className="setup-buttons">
-              <InstrumentButton name="Drum 1" type={Instruments.DRUMS_1} />
-              <InstrumentButton name="Drum 2" type={Instruments.DRUMS_2} />
-              <InstrumentButton name="Drum 3" type={Instruments.DRUMS_3} />
+              {_(Instruments).map(function(type, name) {
+                return (
+                  <InstrumentButton
+                    key={type}
+                    name={name}
+                    type={type}
+                  />
+                );
+              })}
             </div>
           </div>
 
