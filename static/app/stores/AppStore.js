@@ -12,12 +12,13 @@ define(function(require) {
 
   // State
   var appState = States.SETTING_INSTRUMENT;
-  var selectedInstrument = '';
+  var selectedInstrument = -1;
 
   var AppStore = _.extend({}, EventEmitter.prototype, {
     getState: function() {
       return {
-        state: appState
+        state: appState,
+        instrument: selectedInstrument
       };
     },
 

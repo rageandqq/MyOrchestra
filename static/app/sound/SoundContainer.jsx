@@ -1,7 +1,9 @@
 define(function(require) {
 
-  var React = require('react-with-addons');
+  var _ = require('underscore');
 
+  var React = require('react-with-addons');
+  var Instruments = require('app/constants/Instruments');
   var States = require('app/constants/AppConstants').States;
   var SoundStore = require('app/stores/SoundStore');
 
@@ -36,6 +38,8 @@ define(function(require) {
 
       return (
         <div className={classes}>
+            <h1> {_(Instruments).keys()[this.state.currentInstrument]} </h1>
+            <h1> Volume {this.state.volume} </h1>
         </div>
       );
   	}

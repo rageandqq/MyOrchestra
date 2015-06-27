@@ -12,6 +12,7 @@ define(function(require) {
   var CHANGE_EVENT = 'change';
 
   var isCurrentDevice = false;
+  var currentInstrument = -1;
 
   // Sound Files
   var soundFiles = ["sounds/Crash1.wav", "sounds/Crash2.wav", "sounds/Hat1.wav",
@@ -147,9 +148,13 @@ function resetCurrentDevice() {
 var debouncedResetCurrentDevice = _(resetCurrentDevice).debounce(500);
 
   var SoundStore = _.extend({}, EventEmitter.prototype, {
+
+
     getState: function() {
       return {
-        isCurrentDevice: isCurrentDevice
+        isCurrentDevice: isCurrentDevice,
+        volume: buzz.sounds[currentInstrument].getVolume(),
+        currentInstrument: currentInstrument
       };
     },
 
@@ -178,6 +183,42 @@ var debouncedResetCurrentDevice = _(resetCurrentDevice).debounce(500);
         }
         debouncedResetCurrentDevice();
         break;
+
+      case Actions.SET_INSTRUMENT:
+        console.log("instrument set");
+        currentInstrument = action.instrument;
+        console.log(beatSounds.length);
+        SoundStore.emitChange();
+        break;
+
+      case Actions.START_PLAYING:
+        debugger;
+        addToBeat(buzz.sounds[currentInstrument]);
+        Sound1.play();
+        console.log('beat added');
+        SoundStore.emitChange();
+        break;
+
+      case Actions.INCREASE_TEMPO:
+        increaseSpeed(buzz.sounds[currentInstrument]);
+        SoundStore.emitChange();
+        break;
+
+      case Actions.DECREASE_TEMPO:
+        decreaseSpeed(buzz.sounds[currentInstrument]);
+        SoundStore.emitChange();
+        break;
+
+      case Actions.INCREASE_VOLUME:
+        increaseSoundVolume(buzz.sounds[currentInstrument]);
+        SoundStore.emitChange();
+        break;
+
+      case Actions.DECREASE_VOLUME:
+        decreaseSoundVolume(buzz.sounds[currentInstrument]);
+        SoundStore.emitChange();
+        break;
+
     }
   });
 

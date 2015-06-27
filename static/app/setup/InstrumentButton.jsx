@@ -3,12 +3,14 @@ define(function(require) {
 
   var AppViewActions = require('app/actions/AppViewActions');
 
+  var SoundStore = require('app/stores/SoundStore');
+
   require('css!app/setup/__styles__/InstrumentButton.css');
 
   var InstrumentButton = React.createClass({
     propTypes: {
       name: React.PropTypes.string.isRequired,
-      type: React.PropTypes.string.isRequired
+      type: React.PropTypes.number.isRequired
     },
 
     handleClick: function() {
