@@ -4,10 +4,10 @@ var BoundedArray = require('../utils/bounded-array');
 
 var MyoIO = module.exports = function(ServerHelper, debug) {
   //Constants
-  var SAMPLE_PERIOD = 20;
+  var SAMPLE_PERIOD = 15;
   var Z_THRESHOLD = 0.07;
   var HEIGHT_THRESHOLD = 0.15;
-  var ROTATION_THRESHOLD = 0.15;
+  var ROTATION_THRESHOLD = 0.1;
   var HEIGHT_SAMPLE_SIZE = 4;
   var ROTATION_SAMPLE_SIZE = 4;
   var TEMPORARY_LOCK_TIMER = 1200;
