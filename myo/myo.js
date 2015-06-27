@@ -86,6 +86,14 @@ var MyoIO = module.exports = function(ServerHelper, debug) {
     }
   }.bind(this));
 
+  myo.on('wave_in', function(edge) {
+    if (edge) {
+      if (this.debug)
+        console.log('muting all');
+      ServerHelper.mute();
+    }
+  }.bind(this));
+
   function handleRotation(val) {
     var state = analyzeTrend(self.rotationSamples.getArray(), ROTATION_THRESHOLD);
     if (state == 'none' && state != self.rotationState) {
