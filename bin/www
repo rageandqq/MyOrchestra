@@ -11,7 +11,7 @@ app.set('port', process.env.PORT || 3000);
 
 var server = app.listen(app.get('port'), function() {
   debug('Express server listening on port ' + server.address().port);
-  myoInstance = new MyoIO(ServerCallbacks, false);
+  myoInstance = new MyoIO(ServerCallbacks, true);
 });
 
 var io = require('socket.io')(server);
