@@ -2,6 +2,8 @@
 var debug = require('debug')('my-application');
 var app = require('../app');
 
+var Myo = require('../myo');
+
 app.set('port', process.env.PORT || 3000);
 
 var server = app.listen(app.get('port'), function() {
