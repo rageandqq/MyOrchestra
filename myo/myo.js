@@ -47,6 +47,7 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
   }.bind(this));
 
   myo.on('fingers_spread', function(edge) {
+    console.log('detected spread');
     if (edge && !this.locked && this.awaitingPosition) {
       console.log('added device at pos: ' + this.zVal);
       this.awaitingPosition = false;
@@ -128,11 +129,11 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
   }
 
   //print device list (unused)
-  function printDevices (devices) {
-    if (devices.length > 0) {
+  function printDevices (deviceList) {
+    if (deviceList.length > 0) {
       console.log('Device list: ');
-      for (var i in devices) {
-        console.log(devices[i].socket.id);
+      for (var i in deviceList) {
+        console.log(deviceList[i].socket.id);
       }
       console.log('\n');
     } else {
@@ -141,12 +142,12 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
   }
 
   //analyze orientation for devices and update current device (currently unused)
-  function analyze(devices) {
-    for (var i in devices) {
-      var d = devices[i];
-      if (d.z >= this.zVal - Z_THRESHOLD && d.z <= this.zVal + Z_THRESHOLD) {
-        this.currentDeviceName = d.id; //update current device pointed to
-        this.currentDevice = d;
+  function analyze(deviceList) {
+    for (var i in deviceList) {
+      var d = deviceList[i];
+      if (d.z >= self.zVal - Z_THRESHOLD && d.z <= self.zVal + Z_THRESHOLD) {
+        self.currentDeviceName = d.socket.id; //update current device pointed to
+        self.currentDevice = d;
       }
     }
   }
@@ -161,10 +162,8 @@ var MyoReader = module.exports = function(ServerHelper, debug) {
 
 //set list of devices
 MyoReader.prototype.setDevices = function(devices) {
-  if (this.debug) {
-    console.log('new set of devices read by myo: ');
-    console.log(devices);
-  }
+  console.log('new set of devices read by myo: ');
+  console.log(devices);
   this.devices = devices;
 }
 

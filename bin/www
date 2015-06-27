@@ -17,10 +17,11 @@ var server = app.listen(app.get('port'), function() {
 var io = require('socket.io')(server);
 
 io.on('connection',function(socket){
-  devices.push({z: 0, socket: socket});
-  currentSocket = socket;
 
   socket.on('awaiting-position', function() {
+    devices.push({z: 0, socket: socket});
+    currentSocket = socket;
+
     myoInstance.awaitPosition();
     console.log('waiting for position for device: ' + socket.id);
   });
@@ -37,19 +38,32 @@ io.on('connection',function(socket){
 });
 
 var addDevice = function(z) {
-  //hack TODO: Figure out a better way to implement this
-  console.log('add device at :' + z);
-  devices[devices.length-1].z = z; //set position of last added device (since only one is handled at time) -- FIX THIS HACK LATER
+  var dev = devices[devices.length-1];
+  dev.z = z;
+  devices[devices.length-1] = dev; //set position of last added device (since only one is handled at time) -- FIX THIS HACK LATER
   myoInstance.setDevices(devices);
-  currentSocket.emit('position-received', function() {
-  });
+  currentSocket.emit('position-received');
 };
 
+var increaseVolume = function(socket) {
+  socket.emit('increase-volume');
+}
+
+var decreaseVolume = function(socket) {
+  socket.emit('decrease-volume');
+}
+
+var increaseTempo = function(socket) {
+  socket.emit('increase-tempo');
+}
+
+var decreaseTempo = function(socket) {
+  socket.emit('decrease-tempo');
+}
 var ServerCallbacks = { //TODO: Implement all callbacks to be used by MyoReader
   addDevice: addDevice,
-  heartbeat: null,
-  increaseVolume: null,
-  decreaseVolume: null,
-  increaseTempo: null,
-  decreaseTempo: null
+  increaseVolume: increaseVolume,
+  decreaseVolume: decreaseVolume,
+  increaseTempo: increaseTempo,
+  decreaseTempo: decreaseTempo
 };
