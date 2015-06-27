@@ -1,9 +1,42 @@
 @require '../../__styles__/colors'
+@require '../../__styles__/fonts'
 
 .r-SoundContainer
   width 100%
   height 100%
   background-color red-900
 
+  display -webkit-flex
+  display flex
+
+  justify-content -webkit-center
+  justify-content center
+
+  align-items -webkit-center
+  align-items center
+
   &.current-device
     background-color blue-500
+
+  .sound-centering
+    font-family $roboto
+    text-align center
+    color #fff
+
+    h1
+      font-weight 400
+      font-size 3em
+      margin-bottom 30px
+
+    .sound-status
+      p
+        display inline-block
+        color #fff
+        font-size 2em
+        margin 20px 100px
+
+        .sound-value
+          font-size 5em
+
+        .sound-label
+          font-size 1em

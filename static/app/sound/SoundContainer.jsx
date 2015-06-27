@@ -38,10 +38,19 @@ define(function(require) {
 
       return (
         <div className={classes}>
-            <h1> {_(Instruments).keys()[this.state.currentInstrument]} </h1>
-            <h1> Volume {this.state.volume} </h1>
-            <h1> Tempo {this.state.speed} </h1>
-
+          <div className="sound-centering">
+            <h1>{_(Instruments).keys()[this.state.currentInstrument]}</h1>
+            <div className="sound-status">
+              <p>
+                <span className="sound-value">{this.state.volume}</span><br />
+                <span className="sound-label">Volume</span>
+              </p>
+              <p>
+                <span className="sound-value">{this.state.speed}</span><br />
+                <span className="sound-label">Tempo</span>
+              </p>
+            </div>
+          </div>
         </div>
       );
   	}

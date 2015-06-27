@@ -59,5 +59,10 @@ define(function(require) {
     }
   };
 
+  window.debugStartPlaying = function() {
+    AppSocketActions.startPlaying();
+    console.debug('Started playing.');
+  };
+
   return Connection;
 });
