@@ -5,7 +5,8 @@ requirejs.config({
     'react-with-addons': 'vendor/react-with-addons-v0-12-2',
     'react-router': 'vendor/react-router-v0-11-6',
     'underscore': 'vendor/underscore-v1-8-2',
-    'react-shim': 'vendor/react-shim'
+    'react-shim': 'vendor/react-shim',
+    'event-emitter': 'vendor/event-emitter-v4-2-11'
   },
 
   shim: {
