@@ -40,6 +40,8 @@ define(function(require) {
         <div className={classes}>
             <h1> {_(Instruments).keys()[this.state.currentInstrument]} </h1>
             <h1> Volume {this.state.volume} </h1>
+            <h1> Tempo {this.state.speed} </h1>
+
         </div>
       );
   	}

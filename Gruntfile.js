@@ -25,7 +25,7 @@ module.exports = function(grunt) {
       files: {
         expand: true,
         cwd: 'static/',
-        src: ['**/*.js', '**/*.json'],
+        src: ['**/*.js', '**/*.json', '**/*.wav'],
         dest: 'static.build'
       }
     },

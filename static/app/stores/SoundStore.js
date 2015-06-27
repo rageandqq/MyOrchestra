@@ -21,10 +21,10 @@ define(function(require) {
 "sounds/Bass1.mp3", "sounds/Bass2.mp3", "sounds/Synth1.mp3"];
 
   soundFiles = _(soundFiles).map(function(file) {
-    return "assets/" + file;
+    return "/assets/" + file;
   });
 
-// Initializing all sounds
+// Initializing all sounds\
 var Sound1 = new buzz.sound(soundFiles[0]),
   Sound2 = new buzz.sound(soundFiles[1]),
   Sound3 = new buzz.sound(soundFiles[2]),
@@ -41,15 +41,6 @@ var Sound1 = new buzz.sound(soundFiles[0]),
   Sound14 = new buzz.sound(soundFiles[13]),
   Sound15 = new buzz.sound(soundFiles[14]);
 
-// Values for sound indexes
-var crash = 0;
-var hat = 2;
-var kick = 6;
-var snare = 8;
-var guitar = 10;
-var violin = 11;
-var bass = 12;
-var synth = 14;
 
 // buzz.sounds is the array e.g buzz.sounds[0] is Sound1
 
@@ -120,20 +111,56 @@ function playBeat(){ // Play Beat
   }
 }
 
-function increaseSpeed(sound){ // Double Sound Speed
-  sound.setSpeed(sound.getSpeed() * 2);
+function increaseSoundSpeed(sound){ // Double Sound Speed
+  beat.pause();
+  if (sound.getSpeed() === 0.5){
+    sound.setSpeed(1);
+  } else if(sound.getSpeed() === 1){
+    sound.setSpeed(1.5);
+  } else if(sound.getSpeed() === 1.5){
+    sound.setSpeed(2);
+  } else if(sound.getSpeed() === 2){
+    sound.setSpeed(2.5);
+  } else if(sound.getSpeed() === 2.5){
+    sound.setSpeed(3);
+  } else if(sound.getSpeed() === 3){
+    sound.setSpeed(3.5);
+  } else if(sound.getSpeed() === 3.5){
+    sound.setSpeed(4);
+  } 
+  beat.loop().play();
 }
 
-function decreaseSpeed(sound){ // Halve Speed
-  sound.setSpeed(sound.getSpeed() / 2);
+function decreaseSoundSpeed(sound){ // Halve Speed
+  beat.pause();
+  if(sound.getSpeed() === 1){
+    sound.setSpeed(0.5);
+  } else if(sound.getSpeed() === 1.5){
+    sound.setSpeed(1);
+  } else if(sound.getSpeed() === 2){
+    sound.setSpeed(1.5);
+  } else if(sound.getSpeed() === 2.5){
+    sound.setSpeed(2);
+  } else if(sound.getSpeed() === 3){
+    sound.setSpeed(2.5);
+  } else if(sound.getSpeed() === 3.5){
+    sound.setSpeed(3);
+  } else if(sound.getSpeed() === 4){
+    sound.setSpeed(3.5);
+  }
+  beat.loop().play();
 }
 
 function increaseSoundVolume(sound){ // increase a sound volume
+  beat.pause();
   sound.increaseVolume(10);
+  beat.loop().play();
 }
 
 function decreaseSoundVolume(sound){ // decrease a sound volume
+  beat.pause();
   sound.decreaseVolume(10);
+  beat.loop().play();
 }
 
 function fadeBeat(time){ // Fade the beat out given a duration of a fade
@@ -149,12 +176,13 @@ var debouncedResetCurrentDevice = _(resetCurrentDevice).debounce(500);
 
   var SoundStore = _.extend({}, EventEmitter.prototype, {
 
-
     getState: function() {
       return {
         isCurrentDevice: isCurrentDevice,
         volume: buzz.sounds[currentInstrument].getVolume(),
-        currentInstrument: currentInstrument
+        currentInstrument: currentInstrument,
+        speed: buzz.sounds[currentInstrument].getSpeed()
+
       };
     },
 
@@ -185,27 +213,22 @@ var debouncedResetCurrentDevice = _(resetCurrentDevice).debounce(500);
         break;
 
       case Actions.SET_INSTRUMENT:
-        console.log("instrument set");
         currentInstrument = action.instrument;
-        console.log(beatSounds.length);
         SoundStore.emitChange();
         break;
 
       case Actions.START_PLAYING:
-        debugger;
         addToBeat(buzz.sounds[currentInstrument]);
-        Sound1.play();
-        console.log('beat added');
         SoundStore.emitChange();
         break;
 
       case Actions.INCREASE_TEMPO:
-        increaseSpeed(buzz.sounds[currentInstrument]);
+        increaseSoundSpeed(buzz.sounds[currentInstrument]);
         SoundStore.emitChange();
         break;
 
       case Actions.DECREASE_TEMPO:
-        decreaseSpeed(buzz.sounds[currentInstrument]);
+        decreaseSoundSpeed(buzz.sounds[currentInstrument]);
         SoundStore.emitChange();
         break;
 
