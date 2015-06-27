@@ -56,10 +56,17 @@ var beatSounds = []; // array for keeping track of the sounds in beat
 
 var beat = new buzz.group(); // our beat. Used as global sound player
 
+function clearBeat(){ // clear the beat
+  beat.pause(); // stop to prevent issues with beat
+  beatSounds.splice(0, beatSounds.length); // emptying the array
+  beat = new buzz.group(); // reset beat to be empty
+}
+
 // Add a certain sound to a beat
 function addToBeat(sound){
   if(beatSounds.indexOf(sound) < 0){
     beat.pause(); // stop beat to prevent issues
+    beatSounds.splice(0, beatSounds.length); // emptying the array
     beatSounds.push(sound);
     beat = new buzz.group(beatSounds);
     beat.loop().play(); // re-play
@@ -154,11 +161,6 @@ function decreaseVolume(){ // decrease beat volume
   beat.decreaseVolume(10);
 }
 
-function clearBeat(){ // clear the beat
-  beat.pause(); // stop to prevent issues with beat
-  beatSounds.splice(0, beatSounds.length); // emptying the array
-  beat = new buzz.group(); // reset beat to be empty
-}
 
   var SoundStore = _.extend({}, EventEmitter.prototype, {
     getState: function() {
