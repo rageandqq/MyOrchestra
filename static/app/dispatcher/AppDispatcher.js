@@ -13,5 +13,12 @@ define(function(require) {
     });
   }
 
+  AppDispatcher.handleSocketAction = function(action) {
+    this.dispatch({
+      source: Sources.SOCKET,
+      action: action
+    });
+  }
+
   return AppDispatcher;
 });

@@ -2,7 +2,8 @@ define(function() {
   return {
 
     Sources: {
-      VIEW: 'view'
+      VIEW: 'view',
+      SOCKET: 'socket'
     },
 
     Actions: {
