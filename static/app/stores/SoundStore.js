@@ -11,9 +11,11 @@ define(function(require) {
 
   var CHANGE_EVENT = 'change';
 
+  var isCurrentDevice = false;
+
   // Sound Files
   var soundFiles = ["sounds/Crash1.wav", "sounds/Crash2.wav", "sounds/Hat1.wav",
-"sounds/Hat2.wav", "sounds/Hat3.wav", "sounds/Hat4.wav","sounds/Kick1.wav", "sounds/Kick2.wav", 
+"sounds/Hat2.wav", "sounds/Hat3.wav", "sounds/Hat4.wav","sounds/Kick1.wav", "sounds/Kick2.wav",
 "sounds/Snare1.wav", "sounds/Snare2.wav", "sounds/Guitar1.mp3", "sounds/Violin1.mp3",
 "sounds/Bass1.mp3", "sounds/Bass2.mp3", "sounds/Synth1.mp3"];
 
@@ -161,10 +163,18 @@ function decreaseVolume(){ // decrease beat volume
   beat.decreaseVolume(10);
 }
 
+function resetCurrentDevice() {
+  isCurrentDevice = false;
+  SoundStore.emitChange();
+}
+
+var debouncedResetCurrentDevice = _(resetCurrentDevice).debounce(1000);
 
   var SoundStore = _.extend({}, EventEmitter.prototype, {
     getState: function() {
-      return {};
+      return {
+        isCurrentDevice: isCurrentDevice
+      };
     },
 
     emitChange: function() {
@@ -185,7 +195,13 @@ function decreaseVolume(){ // decrease beat volume
     var action = payload.action;
 
     switch(action.actionType) {
-
+      case Actions.CURRENT_DEVICE:
+        if (!currentDevice) {
+          isCurrentDevice = true;
+          SoundStore.emitChange();
+        }
+        debouncedResetCurrentDevice();
+        break;
     }
   });
 

@@ -29,8 +29,13 @@ define(function(require) {
   	},
 
 	render: function() {
+	    var classes = React.addons.classSet({
+	      'r-SoundContainer': true,
+	      'current-device': this.state.isCurrentDevice
+	    });
+
       return (
-        <div className="r-SoundContainer">
+        <div className={classes}>
         </div>
       );
   	}

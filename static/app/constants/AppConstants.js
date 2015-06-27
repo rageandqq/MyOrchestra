@@ -8,7 +8,12 @@ define(function() {
 
     Actions: {
       SET_INSTRUMENT: 'setInstrument',
-      START_PLAYING: 'startPlaying'
+      START_PLAYING: 'startPlaying',
+      INCREASE_TEMPO: 'increaseTempo',
+      DECREASE_TEMPO: 'decreaseTempo',
+      INCREASE_VOLUME: 'increaseVolume',
+      DECREASE_VOLUME: 'decreaseVolume',
+      CURRENT_DEVICE: 'currentDevice'
     },
 
     States: {
