@@ -3,7 +3,7 @@ var debug = require('debug')('my-application');
 var app = require('../app');
 
 var Myo = require('../myo/myo');
-var socketlist = [];
+var devices = [];
 
 app.set('port', process.env.PORT || 3000);
 
@@ -14,14 +14,18 @@ var server = app.listen(app.get('port'), function() {
 var io = require('socket.io')(server);
 
 io.on('connection',function(socket){
-    socketlist.push(socket);
+    devices.push({zPos: 0, socket: socket});
 });
 
 io.on('disconnect', function(socket){
     var i;
-    for (i = 0; i < socketlist.length; i++){
-      if (socket.id === socketlist[i].id)
+    for (i = 0; i < devices.length; i++){
+      if (socket.id === devices[i].socket.id)
         break;
     }
-    socketlist = socketlist.splice(i,1);
+    devices = devices.splice(i,1);
+});
+
+io.on('awaitingPosition', function(data) {
+  Myo.awaitingPosition = true;
 });

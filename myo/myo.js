@@ -1,6 +1,7 @@
 //Globals
 var delta = 0;
 var locked = true;
+var awaitingPosition = false;
 
 var deviceSet = [];
 var zVal = 0;
@@ -39,7 +40,7 @@ myo.on('fist', function(edge){
 });
 
 myo.on('fingers_spread', function(edge) {
-  if (edge && !locked) { //edge is true on start of pose (don't want to repeat twice)
+  if (edge && !locked && awaitingPosition) { //edge is true on start of pose (don't want to repeat twice)
     currentDeviceName = 'DEVICE ' + (++nextDeviceNum);
     var d = new Device('DEVICE ' + nextDeviceNum, zVal);
     deviceSet.push(d);
@@ -73,11 +74,10 @@ function printDevices (devices) {
 }
 
 function analyze() {
-  //noop TODO: work on this
   for (var i in deviceSet) {
     var d = deviceSet[i];
     if (d.z >= zVal - THRESHOLD && d.z <= zVal + THRESHOLD) {
-      currentDeviceName = d.name;
+      currentDeviceName = d.name; //update current device pointed to
     }
   }
 }
