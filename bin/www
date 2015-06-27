@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 var debug = require('debug')('my-application');
 var app = require('../app');
-
+var self = this;
 var Myo = require('../myo/myo');
+
 var devices = [];
 
 app.set('port', process.env.PORT || 3000);
 
 var server = app.listen(app.get('port'), function() {
     debug('Express server listening on port ' + server.address().port);
+    Myo.server = self;
 });
 
 var io = require('socket.io')(server);
@@ -28,4 +30,9 @@ io.on('disconnect', function(socket){
 
 io.on('awaitingPosition', function(data) {
   Myo.awaitingPosition = true;
+  console.log('waiting for position');
 });
+
+var addDevice = function(z) {
+  console.log('add device at :' + z);
+};

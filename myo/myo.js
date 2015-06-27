@@ -2,24 +2,14 @@
 var delta = 0;
 var locked = true;
 var awaitingPosition = false;
-
-var deviceSet = [];
+var server = null;
 var zVal = 0;
-var currentDeviceName = 'NONE';
-var nextDeviceNum = 0;
-
-//Device Model
-function Device(name, z) {
-  this.name = name;
-  this.z = z;
-}
 
 //Constants
 var FREQUENCY = 30;
 var THRESHOLD = 0.1;
 
 var M = require('myo');
-
 var myo = Myo.create();
 
 myo.on('connected', function() {
@@ -40,11 +30,9 @@ myo.on('fist', function(edge){
 });
 
 myo.on('fingers_spread', function(edge) {
-  if (edge && !locked && awaitingPosition) { //edge is true on start of pose (don't want to repeat twice)
-    currentDeviceName = 'DEVICE ' + (++nextDeviceNum);
-    var d = new Device('DEVICE ' + nextDeviceNum, zVal);
-    deviceSet.push(d);
-    console.log("Device created; " + d.name + ": " + d.z);
+  if (edge && !locked && awaitingPosition && server != null) { //edge is true on start of pose (don't want to repeat twice)
+    server.addDevice(zVal);
+    awaitingPosition = false;
   }
 });
 
@@ -54,10 +42,7 @@ myo.on('imu', function(data) {
     delta %= FREQUENCY;
     zVal = data.orientation.z; //set most recent zValue
     if (!locked) {
-      analyze(); //determine where myo is pointing to
-      printDevices(deviceSet);
-      console.log('current device: ' + currentDeviceName);
-      console.log('current zVal: ' + zVal + '\n');
+      //noop, report any values here
     }
   }
 });
@@ -73,9 +58,9 @@ function printDevices (devices) {
   }
 }
 
-function analyze() {
-  for (var i in deviceSet) {
-    var d = deviceSet[i];
+function analyze(devices) {
+  for (var i in devices) {
+    var d = devices[i];
     if (d.z >= zVal - THRESHOLD && d.z <= zVal + THRESHOLD) {
       currentDeviceName = d.name; //update current device pointed to
     }
