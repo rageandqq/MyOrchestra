@@ -5,7 +5,7 @@ var BoundedArray = require('../utils/bounded-array');
 var MyoIO = module.exports = function(ServerHelper, debug) {
   //Constants
   var SAMPLE_PERIOD = 20;
-  var Z_THRESHOLD = 0.1;
+  var Z_THRESHOLD = 0.05;
   var HEIGHT_THRESHOLD = 0.1;
   var ROTATION_THRESHOLD = 0.3;
   var HEIGHT_SAMPLE_SIZE = 4;
@@ -71,6 +71,7 @@ var MyoIO = module.exports = function(ServerHelper, debug) {
         if (this.debug) { //debug
           printDevices(this.devices);
           console.log('current device: ' + (this.currentDevice != null ? this.currentDevice.socket.id:'none'));
+          console.log('current z: ' + this.zVal);
         }
 
         if (this.currentDevice != null) {
@@ -182,7 +183,7 @@ var MyoIO = module.exports = function(ServerHelper, debug) {
     if (deviceList.length > 0) {
       console.log('Device list: ');
       for (var i in deviceList) {
-        console.log(deviceList[i].socket.id);
+        console.log(deviceList[i].socket.id + ', location: ' + deviceList[i].z);
       }
       console.log('\n');
     } else {
