@@ -1,23 +1,23 @@
-var MyoReader = module.exports = function(ServerInit) {
-  //Dependencies
-  var M = require('myo');
+//Dependencies
+var Myo = require('myo');
 
-  //Globals
-  var delta = 0;
-  var locked = true;
-  var zVal = 0;
-
+var MyoReader = module.exports = function(ServerHelper, debug) {
   //Constants
   var FREQUENCY = 30;
   var THRESHOLD = 0.1;
+  var self = this;
 
   //instance variables
+  this.delta = 0;
+  this.locked = true;
+  this.zVal = 0;
   this.awaitingPosition = false;
-  this.server = ServerInit.server;
   this.rotationValue = 0;
   this.heightValue = 0;
   this.rotationRest = true;
   this.heightRest = true;
+  this.devices = [];
+  this.debug = debug || true;
 
   //Create myo connection
   var myo = Myo.create();
@@ -28,8 +28,8 @@ var MyoReader = module.exports = function(ServerInit) {
 
   myo.on('double_tap', function(edge){
     if (edge) { //edge is true on start of pose
-      locked = !locked;
-      if (locked) {
+      this.locked = !this.locked;
+      if (this.locked) {
         console.log('locking Myo\n');
       } else {
         myo.zeroOrientation(); //current orientation is now considered 'home'
@@ -37,30 +37,29 @@ var MyoReader = module.exports = function(ServerInit) {
       }
       myo.vibrate();
     }
-  });
+  }.bind(this));
 
   myo.on('fingers_spread', function(edge) {
-    if (edge && !locked && this.awaitingPosition && this.server != null) { //edge is true on start of pose (don't want to repeat twice)
-      ServerInit.addDevice(zVal);
+    if (edge && !this.locked && this.awaitingPosition) {
       this.awaitingPosition = false;
+      ServerHelper.addDevice(this.zVal);
     }
   }.bind(this));
 
   myo.on('imu', function(data) {
-    delta++;
-    if (delta >= FREQUENCY){
-      delta %= FREQUENCY;
-      zVal = data.orientation.z; //set most recent zValue
-      if (!locked) {
-        //        console.log('Orientation');
-        //        printXYZ(data.orientation);
-        //        console.log('Accelerometer');
-        //        printXYZ(data.accelerometer);
-        //        console.log('Gyroscope');
-        //        printXYZ(data.gyroscope);
-        //        console.log('\n');
-        handleHeight(data.accelerometer.x);
-        handleRotation(data.accelerometer.y);
+    this.delta++;
+    if (this.delta >= FREQUENCY){
+      this.delta %= FREQUENCY;
+      this.zVal = data.orientation.z; //set most recent zValue
+      if (!this.locked) {
+        if (this.devices.length > 0) {
+          analyze(this.devices);
+        }
+        if (this.debug) {
+          printDevices(this.devices); //print device list 
+        }
+        //handleHeight(data.accelerometer.x);
+        //handleRotation(data.accelerometer.y);
       }
     }
   }.bind(this));
@@ -70,16 +69,19 @@ var MyoReader = module.exports = function(ServerInit) {
   }
 
   function handleRotation(val) {
-    console.log('Rotation: ' + val);
+    if (self.debug) {
+      console.log('Rotation: ' + val);
+    }
   }
 
   //print device list (unused)
   function printDevices (devices) {
-    if (devices.length != 0) {
+    if (devices.length > 0) {
       console.log('Device list: ');
       for (var i in devices) {
-        console.log(devices[i].name);
+        console.log(devices[i].socket.id);
       }
+      console.log('\n');
     } else {
       console.log('No devices in list');
     }
@@ -89,8 +91,8 @@ var MyoReader = module.exports = function(ServerInit) {
   function analyze(devices) {
     for (var i in devices) {
       var d = devices[i];
-      if (d.z >= zVal - THRESHOLD && d.z <= zVal + THRESHOLD) {
-        currentDeviceName = d.name; //update current device pointed to
+      if (d.z >= this.zVal - THRESHOLD && d.z <= this.zVal + THRESHOLD) {
+        this.currentDeviceName = d.id; //update current device pointed to
       }
     }
   }
@@ -101,6 +103,15 @@ var MyoReader = module.exports = function(ServerInit) {
     console.log('y: ' + d.y);
     console.log('z: ' + d.z);
   }
+}
+
+//set list of devices
+MyoReader.prototype.setDevices = function(devices) {
+  if (this.debug) {
+    console.log('new set of devices read by myo: ');
+    console.log(devices);
+  }
+  this.devices = devices;
 }
 
 //change to awaiting position state
