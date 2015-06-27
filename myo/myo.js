@@ -65,8 +65,19 @@ var MyoReader = module.exports = function(ServerInit) {
     }
   }.bind(this));
 
-  function handleHeight(val) {
-
+  var currentVolume = 0;
+  var motionVolumefactor = 5;
+  var xThreshold = 0.2;
+  //0 horizontal 1 vertical 
+  function handleHeight(val, val_prev) {
+    if (Math.abs(val - val_prev) < xThreshold && (val - val_prev) > 0) { 
+      currentVolume+=motionVolumefactor; 
+      console.log('current volume: ' + currentVolume);
+    };
+    if (Math.abs(val-val_prev) < xThreshold && (val-val_prev) < 0){
+      currentVolume-=motionVolumefactor;
+      console.log('currentVolume: '+ currentVolume);
+    }
   }
 
   function handleRotation(val) {
