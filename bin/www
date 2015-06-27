@@ -2,7 +2,8 @@
 var debug = require('debug')('my-application');
 var app = require('../app');
 var MyoReader = require('../myo/myo');
-var myoInstance = new MyoReader(this);
+var myoInstance;
+var self = this;
 
 var devices = [];
 
@@ -10,7 +11,8 @@ app.set('port', process.env.PORT || 3000);
 
 var server = app.listen(app.get('port'), function() {
   debug('Express server listening on port ' + server.address().port);
-  myoInstance.awaitingPosition = true;
+  myoInstance = new MyoReader(ServerInitializer);
+  myoInstance.awaitPosition();
 });
 
 var io = require('socket.io')(server);
@@ -19,7 +21,7 @@ io.on('connection',function(socket){
   devices.push({zPos: 0, socket: socket});
 
   socket.on('awaiting-position', function() {
-    myoInstance.awaitingPosition = true;
+    myoInstance.awaitPosition();
     console.log('waiting for position for device: ' + socket.id);
   });
 
@@ -36,4 +38,9 @@ io.on('connection',function(socket){
 
 var addDevice = function(z) {
   console.log('add device at :' + z);
+};
+
+var ServerInitializer = {
+  server : self,
+  addDevice: addDevice
 };

@@ -1,16 +1,20 @@
-var MyoReader = module.exports = function(s) {
+var MyoReader = module.exports = function(ServerInit) {
+  //Dependencies
+  var M = require('myo');
+
   //Globals
   var delta = 0;
   var locked = true;
-  var awaitingPosition = false;
-  var server = s;
   var zVal = 0;
+
+  this.awaitingPosition = false;
+  this.server = ServerInit.server;
 
   //Constants
   var FREQUENCY = 30;
   var THRESHOLD = 0.1;
 
-  var M = require('myo');
+  //Create myo connection
   var myo = Myo.create();
 
   myo.on('connected', function() {
@@ -31,11 +35,11 @@ var MyoReader = module.exports = function(s) {
   });
 
   myo.on('fingers_spread', function(edge) {
-    if (edge && !locked && awaitingPosition && server != null) { //edge is true on start of pose (don't want to repeat twice)
-      server.addDevice(zVal);
-      awaitingPosition = false;
+    if (edge && !locked && this.awaitingPosition && this.server != null) { //edge is true on start of pose (don't want to repeat twice)
+      ServerInit.addDevice(zVal);
+      this.awaitingPosition = false;
     }
-  });
+  }.bind(this));
 
   myo.on('imu', function(data) {
     delta++;
@@ -50,14 +54,16 @@ var MyoReader = module.exports = function(s) {
         printXYZ(data.accelerometer);
         console.log('Gyroscope');
         printXYZ(data.gyroscope);
-        console.log('AwaitingPosition:' + awaitingPosition);
-        if (server != null)
-          console.log('Server:' + server.toString());
+        console.log('AwaitingPosition:' + this.awaitingPosition);
+        if (this.server != null)
+          console.log('Server:' + this.server.toString());
         console.log('\n');
       }
     }
-  });
+  }.bind(this));
 
+
+  //print device list (unused)
   function printDevices (devices) {
     if (devices.length != 0) {
       console.log('Device list: ');
@@ -69,6 +75,7 @@ var MyoReader = module.exports = function(s) {
     }
   }
 
+  //analyze orientation for devices and update current device (currently unused)
   function analyze(devices) {
     for (var i in devices) {
       var d = devices[i];
@@ -78,9 +85,15 @@ var MyoReader = module.exports = function(s) {
     }
   }
 
+  //helper function to print x,y,z coordinates of object
   function printXYZ(d) {
     console.log('x: ' + d.x);
     console.log('y: ' + d.y);
     console.log('z: ' + d.z);
   }
 }
+
+//change to awaiting position state
+MyoReader.prototype.awaitPosition = function() {
+  this.awaitingPosition = true;
+};
