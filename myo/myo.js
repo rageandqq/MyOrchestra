@@ -167,12 +167,11 @@ var MyoIO = module.exports = function(ServerHelper, debug) {
 
   //analyze orientation for devices and update current device
   function analyzeCurrentDevice(deviceList) {
+    self.currentDevice = null;
     for (var i in deviceList) {
       var d = deviceList[i];
       if (d.z >= self.zVal - Z_THRESHOLD && d.z <= self.zVal + Z_THRESHOLD) {
         self.currentDevice = d;
-      } else {
-        self.currentDevice = null;
       }
     }
   }
