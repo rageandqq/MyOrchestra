@@ -144,7 +144,7 @@ function resetCurrentDevice() {
   SoundStore.emitChange();
 }
 
-var debouncedResetCurrentDevice = _(resetCurrentDevice).debounce(1000);
+var debouncedResetCurrentDevice = _(resetCurrentDevice).debounce(500);
 
   var SoundStore = _.extend({}, EventEmitter.prototype, {
     getState: function() {
@@ -172,7 +172,7 @@ var debouncedResetCurrentDevice = _(resetCurrentDevice).debounce(1000);
 
     switch(action.actionType) {
       case Actions.CURRENT_DEVICE:
-        if (!currentDevice) {
+        if (!isCurrentDevice) {
           isCurrentDevice = true;
           SoundStore.emitChange();
         }

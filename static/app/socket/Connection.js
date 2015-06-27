@@ -3,7 +3,7 @@ define(function(require) {
 
   var AppSocketActions = require('app/actions/AppSocketActions');
 
-  var socket = io('http://localhost:3000');
+  var socket = io();
 
   var Events = {
     AWAITING_POSITION: 'awaiting-position',

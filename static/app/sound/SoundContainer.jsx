@@ -14,12 +14,12 @@ define(function(require) {
   	},
 
   	componentWillUnmount: function() {
-  		SoundStore.removeChangeListener();
+  		SoundStore.removeChangeListener(this.updateState);
 
   	},
 
   	componentDidMount: function() {
-  		SoundStore.addChangeListener();
+  		SoundStore.addChangeListener(this.updateState);
 
   	},
 
